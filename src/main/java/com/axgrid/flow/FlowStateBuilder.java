@@ -7,6 +7,7 @@ import com.axgrid.flow.exception.FlowNullCheckException;
 import com.axgrid.flow.exception.FlowTerminateException;
 import com.axgrid.flow.lbd.FlowAction;
 import com.axgrid.flow.lbd.FlowCheckAction;
+import com.axgrid.flow.lbd.FlowExceptionAction;
 
 public class FlowStateBuilder<C extends IFlowContext> {
 
@@ -86,6 +87,46 @@ public class FlowStateBuilder<C extends IFlowContext> {
     public FlowStateBuilder<C> to(FlowStateEnum state) {
        flow.add(state, null, (c) -> c.setState(state));
        return this;
+    }
+
+    public FlowStateBuilder<C> exception(Class<? extends Throwable> throwable, FlowStateEnum toState) { return exception(throwable, toState, false); }
+    public FlowStateBuilder<C> exception(Class<? extends Throwable> throwable, FlowStateEnum toState, boolean terminate) {
+        flow.addException(state, throwable, (c) -> {
+            c.setState(toState);
+            if (terminate) throw new FlowTerminateException();
+        });
+        return this;
+    }
+
+
+    public FlowStateBuilder<C> exception(FlowStateEnum toState) { return exception(toState, false); }
+    public FlowStateBuilder<C> exception(FlowStateEnum toState, boolean terminate) {
+        flow.addException(state, null, (c) -> {
+            c.setState(toState);
+            if (terminate) throw new FlowTerminateException();
+        });
+        return this;
+    }
+
+    public FlowStateBuilder<C> exception(FlowAction<C> action) {
+        flow.addException(state, null, action);
+        return this;
+    }
+
+    public FlowStateBuilder<C> exception(FlowExceptionAction<C> action) {
+        flow.addException(state, null, action);
+        return this;
+    }
+
+
+    public FlowStateBuilder<C> exception(Class<? extends Throwable> throwable, FlowExceptionAction<C> action) {
+        flow.addException(state, throwable, action);
+        return this;
+    }
+
+    public FlowStateBuilder<C> exception(Class<? extends Throwable> throwable, FlowAction<C> action) {
+        flow.addException(state, throwable, action);
+        return this;
     }
 
     public FlowStateBuilder(Flow<C> flow, FlowStateEnum state) {

@@ -7,6 +7,7 @@ import com.axgrid.flow.exception.FlowNullCheckException;
 import com.axgrid.flow.exception.FlowTerminateException;
 import com.axgrid.flow.lbd.FlowAction;
 import com.axgrid.flow.lbd.FlowCheckAction;
+import com.axgrid.flow.lbd.FlowExceptionAction;
 import com.axgrid.flow.lbd.FlowStateAction;
 
 public class FlowBuilder<C extends IFlowContext> {
@@ -125,6 +126,35 @@ public class FlowBuilder<C extends IFlowContext> {
 
     public FlowBuilder<C> execute(FlowAction<C> action) {
         flow.addAll(null, action);
+        return this;
+    }
+
+    public FlowBuilder<C> exception(Class<? extends Throwable> throwable, FlowStateEnum toState) { return exception(throwable, toState, false); }
+    public FlowBuilder<C> exception(Class<? extends Throwable> throwable, FlowStateEnum toState, boolean terminate) {
+        flow.addException(null, throwable, (c) -> {
+            c.setState(toState);
+            if (terminate) throw new FlowTerminateException();
+        });
+        return this;
+    }
+
+    public FlowBuilder<C> exception(FlowAction<C> action) {
+        flow.addException(null, null, action);
+        return this;
+    }
+
+    public FlowBuilder<C> exception(FlowExceptionAction<C> action) {
+        flow.addException(null, null, action);
+        return this;
+    }
+
+    public FlowBuilder<C> exception(Class<? extends Throwable> throwable, FlowExceptionAction<C> action) {
+        flow.addException(null, throwable, action);
+        return this;
+    }
+
+    public FlowBuilder<C> exception(Class<? extends Throwable> throwable, FlowAction<C> action) {
+        flow.addException(null, throwable, action);
         return this;
     }
 
