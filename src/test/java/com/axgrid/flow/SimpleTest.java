@@ -12,7 +12,8 @@ public class SimpleTest {
 
     enum States implements FlowStateEnum {
         INIT,
-        READY
+        READY,
+        DEMO
     }
 
     enum Events implements FlowEventEnum {
@@ -63,6 +64,33 @@ public class SimpleTest {
 
         log.info("----");
         flow.execute(context, Events.tok);
+
+    }
+
+    @Test
+    public void test2() {
+        FlowStatefulContext context = new FlowStatefulContext();
+        Flow<FlowStatefulContext> flow = FlowBuilder.from(States.INIT)
+                .on(States.INIT, (state) ->
+                       state.execute((c) -> {
+                           c.setState(States.READY);
+                       })
+                )
+                .on(States.DEMO, state ->
+                    state.execute((c) -> log.info("TEST STATE"))
+                            .when(null, (c) -> {
+                                log.warn("EXECUTE !!!!");
+                                c.setState(States.INIT);
+                            })
+                        .to(States.INIT)
+                )
+                .when(States.READY, Events.tick, (c) -> {
+                    c.setState(States.INIT);
+                })
+                .build();
+
+        flow.execute(context, Events.tick);
+        Assert.assertEquals(context.getState(), States.READY);
 
     }
 }

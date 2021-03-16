@@ -84,9 +84,8 @@ public class FlowStateBuilder<C extends IFlowContext> {
         return terminate(null);
     }
 
-    public FlowStateBuilder<C> to(FlowStateEnum state) {
-       flow.add(state, null, (c) -> c.setState(state));
-       return this;
+    public FlowStateBuilder<C> to(FlowStateEnum toState) {
+        return this.execute((c) -> c.setState(toState));
     }
 
     public FlowStateBuilder<C> exception(Class<? extends Throwable> throwable, FlowStateEnum toState) { return exception(throwable, toState, false); }
