@@ -83,6 +83,11 @@ public class FlowStateBuilder<C extends IFlowContext> {
         return terminate(null);
     }
 
+    public FlowStateBuilder<C> to(FlowStateEnum state) {
+       flow.add(state, null, (c) -> c.setState(state));
+       return this;
+    }
+
     public FlowStateBuilder(Flow<C> flow, FlowStateEnum state) {
         this.flow = flow;
         this.state = state;
