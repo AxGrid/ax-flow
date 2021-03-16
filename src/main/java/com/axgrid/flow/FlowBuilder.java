@@ -138,6 +138,17 @@ public class FlowBuilder<C extends IFlowContext> {
         return this;
     }
 
+
+
+    public FlowBuilder<C> exception(FlowStateEnum toState) { return exception(toState, false); }
+    public FlowBuilder<C> exception(FlowStateEnum toState, boolean terminate) {
+        flow.addException(null, null, (c) -> {
+            c.setState(toState);
+            if (terminate) throw new FlowTerminateException();
+        });
+        return this;
+    }
+
     public FlowBuilder<C> exception(FlowAction<C> action) {
         flow.addException(null, null, action);
         return this;
