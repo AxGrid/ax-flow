@@ -13,6 +13,9 @@ public class FlowStateBuilder<C extends IFlowContext> {
     final FlowStateEnum state;
     final Flow<C> flow;
 
+
+
+
     public FlowStateBuilder<C> transition(FlowEventEnum event, FlowStateEnum toState) {
         return transition(event, toState, false);
     }
@@ -26,12 +29,21 @@ public class FlowStateBuilder<C extends IFlowContext> {
         return this;
     }
 
+    public FlowStateBuilder<C> transition(FlowCheckAction<C> check, FlowStateEnum toState) {
+        return transition(check, toState, false);
+    }
+
+    public FlowStateBuilder<C> transition(FlowCheckAction<C> check, FlowStateEnum toState,  boolean terminate) {
+        return transition(null, check, toState, terminate);
+    }
+
     public FlowStateBuilder<C> transition(FlowEventEnum event, FlowCheckAction<C> check, FlowStateEnum toState) {
         return transition(event, check, toState, false);
     }
     public FlowStateBuilder<C> transition(FlowEventEnum event, FlowCheckAction<C> check, FlowStateEnum toState, boolean terminate) {
         if (toState == null) throw new FlowNullCheckException("toState");
         if (check == null) throw new FlowNullCheckException("check");
+
         flow.add(state, event, (c) -> {
             if (check.check(c)) {
                 c.setState(toState);
