@@ -3,11 +3,9 @@ package com.axgrid.flow;
 import com.axgrid.flow.dto.AxFlowEventEnum;
 import com.axgrid.flow.dto.AxFlowStateEnum;
 import com.axgrid.flow.dto.AxFlowStatefulContext;
-import lombok.extern.slf4j.Slf4j;
 import org.junit.Assert;
 import org.junit.Test;
 
-@Slf4j
 public class SimpleTest {
 
     enum States implements AxFlowStateEnum {
@@ -46,7 +44,7 @@ public class SimpleTest {
                 })
                 .build();
 
-        log.info("States:{}", axFlow.actions);
+
         Assert.assertEquals(axFlow.actions.size(), 3);
 
 
@@ -57,13 +55,12 @@ public class SimpleTest {
 
         Assert.assertEquals(context.getState(), States.READY);
         Assert.assertEquals(context.getLastEvent(), Events.tick);
-        log.info("----");
+
         axFlow.execute(context, Events.tick);
 
         Assert.assertEquals(context.getState(), States.INIT);
         Assert.assertEquals(context.getLastEvent(), Events.tick);
 
-        log.info("----");
         axFlow.execute(context, Events.tok);
 
     }
@@ -78,9 +75,9 @@ public class SimpleTest {
                        })
                 )
                 .on(States.DEMO, state ->
-                    state.execute((c) -> log.info("TEST STATE"))
+                    state.execute((c) -> System.out.println("TEST STATE"))
                             .when(null, (c) -> {
-                                log.warn("EXECUTE !!!!");
+                                System.out.println("EXECUTE !!!!");
                                 c.setState(States.INIT);
                             })
                         .to(States.INIT)
