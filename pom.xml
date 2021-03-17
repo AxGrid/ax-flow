@@ -4,9 +4,9 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.axgrid.axFlow</groupId>
+    <groupId>com.axgrid.flow</groupId>
     <artifactId>ax-flow</artifactId>
-    <version>1.6</version>
+    <version>1.7</version>
 
     <properties>
         <maven.compiler.source>11</maven.compiler.source>
