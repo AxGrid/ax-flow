@@ -6,16 +6,14 @@ import com.axgrid.flow.dto.AxFlowContext;
 import com.axgrid.flow.exception.AxFlowTerminateException;
 import com.axgrid.flow.lbd.AxFlowAction;
 import com.axgrid.flow.lbd.AxFlowExceptionAction;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.Getter;
+
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-@Data
+
 public class AxFlow<C extends AxFlowContext> {
 
     final AxFlowStateEnum startState;
@@ -27,10 +25,14 @@ public class AxFlow<C extends AxFlowContext> {
         return (AxFlowBuilder<C1>) AxFlowBuilder.from(startState);
     }
 
-    @Getter
+
     final Map<AxFlowStateEnum, Map<AxFlowEventEnum, List<ActionHolder>>> actions;
 
+    public Map<AxFlowStateEnum, Map<AxFlowEventEnum, List<ActionHolder>>> getActions() { return actions; }
+
     final Map<AxFlowStateEnum, List<ExceptionHolder>> exceptions;
+
+    public Map<AxFlowStateEnum, List<ExceptionHolder>> getExceptions() { return exceptions; }
 
     Comparator<ActionHolder> comparator = Comparator.comparing((item) -> item.id);
 
@@ -113,10 +115,13 @@ public class AxFlow<C extends AxFlowContext> {
     }
 
 
-    @AllArgsConstructor
     class ActionHolder {
         final long id;
         final AxFlowAction<C> action;
+        public ActionHolder(long id, AxFlowAction<C> action) {
+            this.id = id;
+            this.action = action;
+        }
     }
 
 
