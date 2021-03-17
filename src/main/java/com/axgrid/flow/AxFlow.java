@@ -1,11 +1,11 @@
 package com.axgrid.flow;
 
-import com.axgrid.flow.dto.FlowEventEnum;
-import com.axgrid.flow.dto.FlowStateEnum;
-import com.axgrid.flow.dto.IFlowContext;
-import com.axgrid.flow.exception.FlowTerminateException;
-import com.axgrid.flow.lbd.FlowAction;
-import com.axgrid.flow.lbd.FlowExceptionAction;
+import com.axgrid.flow.dto.AxFlowEventEnum;
+import com.axgrid.flow.dto.AxFlowStateEnum;
+import com.axgrid.flow.dto.AxFlowContext;
+import com.axgrid.flow.exception.AxFlowTerminateException;
+import com.axgrid.flow.lbd.AxFlowAction;
+import com.axgrid.flow.lbd.AxFlowExceptionAction;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
@@ -16,31 +16,31 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Data
-public class Flow<C extends IFlowContext> {
+public class AxFlow<C extends AxFlowContext> {
 
-    final FlowStateEnum startState;
+    final AxFlowStateEnum startState;
 
     final AtomicLong actionId = new AtomicLong();
 
     @SuppressWarnings(value = "unchecked")
-    public static <C1 extends IFlowContext> FlowBuilder<C1> from(FlowStateEnum startState) {
-        return (FlowBuilder<C1>)FlowBuilder.from(startState);
+    public static <C1 extends AxFlowContext> AxFlowBuilder<C1> from(AxFlowStateEnum startState) {
+        return (AxFlowBuilder<C1>) AxFlowBuilder.from(startState);
     }
 
     @Getter
-    final Map<FlowStateEnum, Map<FlowEventEnum, List<ActionHolder>>> actions;
+    final Map<AxFlowStateEnum, Map<AxFlowEventEnum, List<ActionHolder>>> actions;
 
-    final Map<FlowStateEnum, List<ExceptionHolder>> exceptions;
+    final Map<AxFlowStateEnum, List<ExceptionHolder>> exceptions;
 
     Comparator<ActionHolder> comparator = Comparator.comparing((item) -> item.id);
 
-    protected void add(FlowStateEnum state, FlowEventEnum event, FlowAction<C> action) {
+    protected void add(AxFlowStateEnum state, AxFlowEventEnum event, AxFlowAction<C> action) {
         var stateActions = actions.get(state);
         if (!stateActions.containsKey(event)) stateActions.put(event, new ArrayList<>());
         stateActions.get(event).add(new ActionHolder(actionId.incrementAndGet(), action));
     }
 
-    protected void addException(FlowStateEnum state, Class<? extends Throwable> throwable, FlowAction<C> action) {
+    protected void addException(AxFlowStateEnum state, Class<? extends Throwable> throwable, AxFlowAction<C> action) {
         if (throwable == null) throwable = Exception.class;
         var holder = new ExceptionHolder(throwable, action);
         if (state == null)
@@ -49,7 +49,7 @@ public class Flow<C extends IFlowContext> {
             this.exceptions.get(state).add(holder);
     }
 
-    protected void addException(FlowStateEnum state, Class<? extends Throwable> throwable, FlowExceptionAction<C> action) {
+    protected void addException(AxFlowStateEnum state, Class<? extends Throwable> throwable, AxFlowExceptionAction<C> action) {
         if (throwable == null) throwable = Exception.class;
         var holder = new ExceptionHolder(throwable, action);
         if (state == null)
@@ -58,7 +58,7 @@ public class Flow<C extends IFlowContext> {
             this.exceptions.get(state).add(holder);
     }
 
-    public void addAll(FlowEventEnum event, FlowAction<C> action) {
+    public void addAll(AxFlowEventEnum event, AxFlowAction<C> action) {
         var holder = new ActionHolder(actionId.incrementAndGet(), action);
         for(var eventMap : actions.values()) {
             if (!eventMap.containsKey(event)) eventMap.put(event, new ArrayList<>());
@@ -66,7 +66,7 @@ public class Flow<C extends IFlowContext> {
         }
     }
 
-    private List<ActionHolder> getAllActions(FlowStateEnum state, FlowEventEnum event) {
+    private List<ActionHolder> getAllActions(AxFlowStateEnum state, AxFlowEventEnum event) {
         if (event == null) return actions.get(state).getOrDefault(null, Collections.emptyList());
         return Stream.concat(
                 actions.get(state).getOrDefault(event, Collections.emptyList()).stream(),
@@ -77,13 +77,13 @@ public class Flow<C extends IFlowContext> {
 
     }
 
-    public void execute(C context, FlowEventEnum event) {
+    public void execute(C context, AxFlowEventEnum event) {
         if (context.getState() == null) context.setState(startState);
         context.setLastEvent(event);
         for(var executor : getAllActions(context.getState(), event)) {
             try {
                 executor.action.op(context);
-            }catch (FlowTerminateException terminateException) {
+            }catch (AxFlowTerminateException terminateException) {
                 break;
             }catch (Exception e) {
                 except(context, e);
@@ -97,14 +97,14 @@ public class Flow<C extends IFlowContext> {
                 try {
                     if (eh.action != null) eh.action.op(context);
                     if (eh.exceptionAction != null) eh.exceptionAction.op(context, e);
-                }catch (FlowTerminateException ignore) {
+                }catch (AxFlowTerminateException ignore) {
                     break;
                 }
             }
         }
     }
 
-    public Flow(FlowStateEnum startState){
+    public AxFlow(AxFlowStateEnum startState){
         this.startState = startState;
         this.actions = Arrays.stream(startState.getClass().getEnumConstants())
                 .collect(Collectors.toMap(item -> item, item -> new HashMap<>()));
@@ -116,22 +116,22 @@ public class Flow<C extends IFlowContext> {
     @AllArgsConstructor
     class ActionHolder {
         final long id;
-        final FlowAction<C> action;
+        final AxFlowAction<C> action;
     }
 
 
     class ExceptionHolder {
         final Class<? extends Throwable> throwable;
-        final FlowAction<C> action;
-        final FlowExceptionAction<C> exceptionAction;
+        final AxFlowAction<C> action;
+        final AxFlowExceptionAction<C> exceptionAction;
 
-        public ExceptionHolder(Class<? extends Throwable> throwable, FlowAction<C> action) {
+        public ExceptionHolder(Class<? extends Throwable> throwable, AxFlowAction<C> action) {
             this.throwable = throwable;
             this.action = action;
             this.exceptionAction = null;
         }
 
-        public ExceptionHolder(Class<? extends Throwable> throwable, FlowExceptionAction<C> action) {
+        public ExceptionHolder(Class<? extends Throwable> throwable, AxFlowExceptionAction<C> action) {
             this.throwable = throwable;
             this.action = null;
             this.exceptionAction = action;

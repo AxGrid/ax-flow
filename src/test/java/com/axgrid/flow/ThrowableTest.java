@@ -1,20 +1,20 @@
 package com.axgrid.flow;
 
-import com.axgrid.flow.dto.FlowEventEnum;
-import com.axgrid.flow.dto.FlowStateEnum;
-import com.axgrid.flow.dto.FlowStatefulContext;
+import com.axgrid.flow.dto.AxFlowEventEnum;
+import com.axgrid.flow.dto.AxFlowStateEnum;
+import com.axgrid.flow.dto.AxFlowStatefulContext;
 import org.junit.Assert;
 import org.junit.Test;
 
 public class ThrowableTest {
 
-    enum States implements FlowStateEnum {
+    enum States implements AxFlowStateEnum {
         INIT,
         READY,
         ERROR
     }
 
-    enum Events implements FlowEventEnum {
+    enum Events implements AxFlowEventEnum {
         tick,
         tok,
         error
@@ -50,7 +50,7 @@ public class ThrowableTest {
     @Test
     public void testFrsThrowable() {
 
-        Flow<FlowStatefulContext> flow = Flow.<FlowStatefulContext>from(States.INIT)
+        AxFlow<AxFlowStatefulContext> axFlow = AxFlow.<AxFlowStatefulContext>from(States.INIT)
                 .on(States.INIT, state ->
                     state
                             .transition(Events.tick, States.READY)
@@ -73,18 +73,18 @@ public class ThrowableTest {
                 .exception(Exception.class, States.INIT)
                 .build();
 
-        FlowStatefulContext ctx = new FlowStatefulContext();
-        flow.execute(ctx, Events.tok);
+        AxFlowStatefulContext ctx = new AxFlowStatefulContext();
+        axFlow.execute(ctx, Events.tok);
         Assert.assertEquals(ctx.getState(), States.INIT);
-        flow.execute(ctx, Events.tick);
+        axFlow.execute(ctx, Events.tick);
         Assert.assertEquals(ctx.getState(), States.READY);
-        flow.execute(ctx, Events.error);
+        axFlow.execute(ctx, Events.error);
         Assert.assertEquals(ctx.getState(), States.ERROR);
-        flow.execute(ctx, Events.tick);
+        axFlow.execute(ctx, Events.tick);
         Assert.assertEquals(ctx.getState(), States.INIT);
-        flow.execute(ctx, Events.tick);
+        axFlow.execute(ctx, Events.tick);
         Assert.assertEquals(ctx.getState(), States.READY);
-        flow.execute(ctx, Events.tok);
+        axFlow.execute(ctx, Events.tok);
         Assert.assertEquals(ctx.getState(), States.INIT);
 
 

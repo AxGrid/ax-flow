@@ -6,7 +6,7 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class FlowStateEventHolder {
-    FlowEventEnum event;
-    FlowStateEnum state;
+public class AxFlowStateEventHolder {
+    AxFlowEventEnum event;
+    AxFlowStateEnum state;
 }

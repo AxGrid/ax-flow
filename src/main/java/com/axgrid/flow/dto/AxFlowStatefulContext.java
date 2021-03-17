@@ -1,22 +1,22 @@
 package com.axgrid.flow.dto;
 
-import com.axgrid.flow.Flow;
+import com.axgrid.flow.AxFlow;
 import lombok.Data;
 
 import java.io.Serializable;
 import java.util.Date;
 
 @Data
-public class FlowStatefulContext implements IFlowContext, Serializable  {
+public class AxFlowStatefulContext implements AxFlowContext, Serializable  {
 
-    private Flow<? extends IFlowContext> flow;
-    private FlowStateEnum state;
-    private FlowStateEnum previousState;
-    private FlowEventEnum lastEvent;
+    private AxFlow<? extends AxFlowContext> flow;
+    private AxFlowStateEnum state;
+    private AxFlowStateEnum previousState;
+    private AxFlowEventEnum lastEvent;
     private long previousExecutionTime;
     private long executionTime = new Date().getTime();
 
-    public void setState(FlowStateEnum state) {
+    public void setState(AxFlowStateEnum state) {
         this.previousState = this.state;
         this.state = state;
     }

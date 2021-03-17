@@ -1,5 +1,5 @@
 package com.axgrid.flow.dto;
 
-public interface FlowEventEnum {
+public interface AxFlowEventEnum {
     String name();
 }

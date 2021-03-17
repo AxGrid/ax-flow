@@ -1,5 +1,5 @@
 package com.axgrid.flow.dto;
 
-public interface FlowStateEnum {
+public interface AxFlowStateEnum {
     String name();
 }

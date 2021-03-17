@@ -1,8 +1,8 @@
 package com.axgrid.flow;
 
-import com.axgrid.flow.dto.FlowEventEnum;
-import com.axgrid.flow.dto.FlowStateEnum;
-import com.axgrid.flow.dto.FlowStatefulContext;
+import com.axgrid.flow.dto.AxFlowEventEnum;
+import com.axgrid.flow.dto.AxFlowStateEnum;
+import com.axgrid.flow.dto.AxFlowStatefulContext;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Assert;
 import org.junit.Test;
@@ -10,21 +10,21 @@ import org.junit.Test;
 @Slf4j
 public class SimpleTest {
 
-    enum States implements FlowStateEnum {
+    enum States implements AxFlowStateEnum {
         INIT,
         READY,
         DEMO
     }
 
-    enum Events implements FlowEventEnum {
+    enum Events implements AxFlowEventEnum {
         tick,
         tok,
     }
 
     @Test
     public void test() {
-        FlowStatefulContext context = new FlowStatefulContext();
-        Flow<FlowStatefulContext> flow = FlowBuilder.from(States.INIT)
+        AxFlowStatefulContext context = new AxFlowStatefulContext();
+        AxFlow<AxFlowStatefulContext> axFlow = AxFlowBuilder.from(States.INIT)
                 .on(States.INIT, (state) ->
                     state.transition(Events.tick, States.READY) // Перейти
                           .when(Events.tick, (c) -> { }) // Определенное событие
@@ -46,31 +46,32 @@ public class SimpleTest {
                 })
                 .build();
 
-        Assert.assertEquals(flow.actions.size(), 2);
-        log.info("States:{}", flow.actions);
+        log.info("States:{}", axFlow.actions);
+        Assert.assertEquals(axFlow.actions.size(), 3);
+
 
         Assert.assertNull(context.getState());
         Assert.assertNull(context.getLastEvent());
 
-        flow.execute(context, Events.tick);
+        axFlow.execute(context, Events.tick);
 
         Assert.assertEquals(context.getState(), States.READY);
         Assert.assertEquals(context.getLastEvent(), Events.tick);
         log.info("----");
-        flow.execute(context, Events.tick);
+        axFlow.execute(context, Events.tick);
 
         Assert.assertEquals(context.getState(), States.INIT);
         Assert.assertEquals(context.getLastEvent(), Events.tick);
 
         log.info("----");
-        flow.execute(context, Events.tok);
+        axFlow.execute(context, Events.tok);
 
     }
 
     @Test
     public void test2() {
-        FlowStatefulContext context = new FlowStatefulContext();
-        Flow<FlowStatefulContext> flow = FlowBuilder.from(States.INIT)
+        AxFlowStatefulContext context = new AxFlowStatefulContext();
+        AxFlow<AxFlowStatefulContext> axFlow = AxFlowBuilder.from(States.INIT)
                 .on(States.INIT, (state) ->
                        state.execute((c) -> {
                            c.setState(States.READY);
@@ -89,7 +90,7 @@ public class SimpleTest {
                 })
                 .build();
 
-        flow.execute(context, Events.tick);
+        axFlow.execute(context, Events.tick);
         Assert.assertEquals(context.getState(), States.READY);
 
     }

@@ -16,7 +16,7 @@ enum Events implements FlowEventEnum {
     tok
 }
 
-final Flow<Context> flow = FlowBuilder.<Context>from(States.INIT)
+final Flow<Context> axFlow = FlowBuilder.<Context>from(States.INIT)
     .on(States.INIT, state ->
         state ->
             state
