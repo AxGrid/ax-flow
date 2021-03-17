@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.axgrid.axFlow</groupId>
-    <artifactId>ax-axFlow</artifactId>
+    <artifactId>ax-flow</artifactId>
     <version>1.6</version>
 
     <properties>
