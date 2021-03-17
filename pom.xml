@@ -6,7 +6,7 @@
 
     <groupId>com.axgrid.axFlow</groupId>
     <artifactId>ax-axFlow</artifactId>
-    <version>1.5</version>
+    <version>1.6</version>
 
     <properties>
         <maven.compiler.source>11</maven.compiler.source>
