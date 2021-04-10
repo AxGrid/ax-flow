@@ -3,8 +3,12 @@ package com.axgrid.flow;
 import com.axgrid.flow.dto.AxFlowEventEnum;
 import com.axgrid.flow.dto.AxFlowStateEnum;
 import com.axgrid.flow.dto.AxFlowStatefulContext;
+import jdk.jfr.DataAmount;
 import org.junit.Assert;
 import org.junit.Test;
+
+import java.io.Console;
+import java.util.Date;
 
 public class SimpleTest {
 
@@ -17,6 +21,39 @@ public class SimpleTest {
     enum Events implements AxFlowEventEnum {
         tick,
         tok,
+    }
+
+    @Test
+    public void timeTest() {
+        AxFlowStatefulContext context = new AxFlowStatefulContext();
+        AxFlow<AxFlowStatefulContext> axFlow = AxFlowBuilder.from(States.INIT)
+                .on(States.INIT, (state) ->
+                        state.transition(Events.tick, States.READY) // Перейти
+                                .when(Events.tick, (c) -> { }) // Определенное событие
+                                .when((c) -> { }) // Каждое событие
+                )
+                .when(Events.tick, (c) -> {
+                    //System.out.println("Context:" +c.toString());
+                })
+                .when(States.INIT, Events.tick, (c) -> {
+
+                })
+                .when(States.READY, Events.tick, (c) -> {
+                    c.setState(States.INIT);
+                })
+                .when(States.READY, (c) -> {
+                    //System.out.println("All ready .Context:" +c.toString());
+                })
+                .build();
+
+        for(int j=0;j<100;j++) {
+            var startTime = new Date().getTime();
+            for (int i = 0; i < 10000; i++) {
+                axFlow.execute(context, Events.tick);
+            }
+            System.out.printf("Time:%dms\n", new Date().getTime() - startTime);
+        }
+
     }
 
     @Test

@@ -23,12 +23,33 @@ public class AxFlowBuilder<C extends AxFlowContext> {
         return this;
     }
 
+    public AxFlowBuilder<C> add(AxFlowStateEnum state, AxFlow<C> otherFlow) {
+        when(state, (ctx) -> otherFlow.execute(ctx, ctx.getLastEvent()));
+        return this;
+    }
+
+    public AxFlowBuilder<C> add(AxFlow<C> otherFlow) {
+        when((ctx) -> otherFlow.execute(ctx, ctx.getLastEvent()));
+        return this;
+    }
+
+    public AxFlowBuilder<C> add(AxFlowEventEnum event, AxFlow<C> otherFlow) {
+        when(event, (ctx) -> otherFlow.execute(ctx, ctx.getLastEvent()));
+        return this;
+    }
+
+    public AxFlowBuilder<C> add(AxFlowStateEnum state, AxFlowEventEnum event, AxFlow<C> otherFlow) {
+        when(state, event, (ctx) -> otherFlow.execute(ctx, ctx.getLastEvent()));
+        return this;
+    }
+
     public AxFlowBuilder<C> when(AxFlowStateEnum state, AxFlowAction<C> action) {
         if (state == null) throw new AxFlowNullCheckException("state");
         if (action == null) throw new AxFlowNullCheckException("action");
         axFlow.add(state, null, action);
         return this;
     }
+
 
     public AxFlowBuilder<C> when(AxFlowEventEnum event, AxFlowAction<C> action) {
         if (event == null) throw new AxFlowNullCheckException("event");

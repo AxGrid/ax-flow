@@ -14,7 +14,24 @@ public class AxFlowStateBuilder<C extends AxFlowContext> {
     final AxFlowStateEnum state;
     final AxFlow<C> axFlow;
 
+    public AxFlowStateBuilder<C> add(AxFlow<C> otherFlow) {
+        return this.when((ctx) -> otherFlow.execute(ctx, ctx.getLastEvent()));
+    }
 
+    public AxFlowStateBuilder<C> add(AxFlow<C> otherFlow, boolean terminate) {
+        return this.when((ctx) -> {
+            otherFlow.execute(ctx, ctx.getLastEvent());
+            if (terminate) throw new AxFlowTerminateException();
+        });
+    }
+
+    public AxFlowStateBuilder<C> add(AxFlowEventEnum event, AxFlow<C> otherFlow) {
+        return this.when(event, (ctx) -> otherFlow.execute(ctx, ctx.getLastEvent()));
+    }
+
+    public AxFlowStateBuilder<C> add(AxFlowEventEnum event, AxFlow<C> otherFlow, boolean terminate) {
+        return this.when(event, (ctx) -> otherFlow.execute(ctx, ctx.getLastEvent()), terminate);
+    }
 
 
     public AxFlowStateBuilder<C> transition(AxFlowEventEnum event, AxFlowStateEnum toState) {
